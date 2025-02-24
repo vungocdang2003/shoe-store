@@ -1,0 +1,63 @@
+{% extends 'layout/base.html' %}
+{% block title %}Giỏ Hàng{% endblock %}
+{% block content %}
+{% if msg %}
+<div class="alert alert-info mt-3">{{ msg }}</div>
+{% endif %}
+<div class="row">
+    {% if GioHang.TongSoLuong == 0 %}
+        <h1 class="text-center text-info mt-1">Giỏ hàng</h1>
+    {% else %}
+        <div class="col-md-8 col-sm-12">
+            <h1 class="text-center text-info mt-1">Giỏ hàng</h1>
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th>Tên SP</th>
+                    <th>Đơn giá</th>
+                    <th>Kho Còn Lại</th>
+                    <th>Số Lượng</th>
+                    <th></th>
+                </tr>
+                {% for g in GioHang.values() %}
+                <tr id="product{{ g.MaSP }}" class="align-middle">
+                    <td><img src="{{ g.AnhBia }}" alt="" style="width: 100px; height: 100px;"></td>
+                    <td>{{ g.TenSP }}</td>
+                    <td>{{ "{:,.0f}".format(g.Gia) }} VND</td>
+                    <td>{{ SLTonKho[g.MaSP] }}</td>
+                    <td><input type="number" onblur="updateCart('{{ g.MaSP }}', this)" value="{{ g.SoLuong }}" class="form-control"></td>
+                    <td><button class="btn btn-danger" onclick="deleteCart('{{ g.MaSP }}', this)">&time;</button></td>
+                </tr>
+                {% endfor %}
+            </table>
+            <div class="alert alert-info">
+                <h3>Tổng tiền: <span class="cart-amount">{{ "{:,.0f}".format(GioHang.TongTien) }}</span> VND</h3>
+                <h3>Tổng số lượng: <span class="cart-counter">{{ GioHang.TongSoLuong }}</span></h3>
+            </div>
+        </div>
+    {% endif %}  {# Đóng if ở đây #}
+
+    {% if GioHang.TongSoLuong != 0 %}
+    <div class="col-md-4 col-sm-12 d-flex flex-column align-items-center justify-content-center" id="form-thong-tin">
+        <h3>Nhập thông tin đơn hàng</h3>
+        <form action="/checkthongtin" method="post" class="p-3" id="form-thanh-toan">
+            <div class="form-group mt-2">
+                <label for="phone" style="min-width: 100px;">Số điện thoại:</label>
+                <input type="tel" id="phone" name="sdt" maxlength="12" pattern="\d{12}" required>
+            </div>
+            <br>
+            <div class="form-group mt-2">
+                <label for="address" style="min-width: 100px;" class="d-block">Địa chỉ:</label>
+                <textarea id="address" name="diachi" style="min-width: 200px" required></textarea>
+            </div>
+            <br>
+            <div class="text-end">
+                <button type="button" onclick="confirmBuy()" class="btn btn-danger text-white">Đặt hàng</button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="alert alert-info">Không có sản phẩm trong giỏ hàng</div>
+    {% endif %}  {# Đóng if ở đây #}
+</div>
+{% endblock %}

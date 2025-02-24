@@ -1,0 +1,17 @@
+<section class="container">
+    {% for t in TheLoai %}
+    {% if SanPham[t.MaSP] %}
+    <div class="row">
+        <div class="section-title text-center clearfix p-3">
+            <h2>
+                {{ t.TenTheLoai }}
+            </h2>
+        </div>
+        {% for s in SanPham[t.MaSP] %}
+        {% include 'layout/card_item.html' %}
+        {% endfor %}
+        <a href="/?theloai={{t.Ma}}" class="text-end text-danger link-hover mt-2">Xem thêm >></a>
+    </div>
+    {% endif %}
+    {% endfor %}
+</section>

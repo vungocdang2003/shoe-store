@@ -1,0 +1,81 @@
+{% extends 'layout/base.html' %}
+{% block title %}{{SanPham.TenSP}}{% endblock %}
+{% block content %}
+<div class="row mt-4 justify-content-between">
+    <div class="col-md-3 col-sm-12 ms-4">
+        <img src="{{SanPham.AnhBia}}" alt="AnhBia" style="width: 100%; height: 400px">
+    </div>
+    <div class="col-md-8 col-sm-12">
+        <h1 class="text-center m-2">{{SanPham.TenSP}}</h1>
+        <p>{{soluongbinhluan}} đánh giá|đã bán:{{soluongdaban}}</p>
+        <hr>
+        <h3 class="text-danger">{{"{:,.0f}".format(SanPham.Gia)}}</h3>
+        <hr>
+        <div class="row">
+            <ul class="col-md-5 cpl-sm-12">
+                <li>Mã sản phẩm: {{SanPham.MaSP}}</li>
+                <li>Thể loại: {% for t in TheLoai %}{{t.TenTheLoai}}{% endfor %}</li>
+                <li>Kho còn lại: {{SanPham.SLTonKho}}</li>
+            </ul>
+            <div class="col-md-6 col-sm-12">
+                {% if SanPham.SLTonKho !=0 %}
+                <h3>Số lượng</h3>
+                <input type="number" min="1" max="{{SanPham.SLTonKho}}" value="1" class="text-center d-block mb-3" id="soluong">
+                <button class="btn bg-danger text-while rounded-2 d-block w-100 mb-2"
+                onclick="addToCart('{{SanPham['MaSP']}}','{{SanPham['TenSP']}}',{{SanPham['Gia']}},{% if current_user.is_authenticated and current_user.LoaiTK|string == 'LoaiTaiKhoan.KHACHHANG' %}{{current_user.LoaiTK}}{% else %}''{% endif %},{{SanPham['SLTonKho']}},0,)">
+                    Thêm vào giỏ hàng
+                </button>
+                <button class="btn bg-danger text-while rounded-2 d-block w-50"
+                onclick="addToCart('{{SanPham['MaSP']}}','{{SanPham['TenSP']}}',{{SanPham['Gia']}},{% if current_user.is_authenticated and current_user.LoaiTK|string == 'LoaiTaiKhoan.KHACHHANG' %}{{current_user.LoaiTK}}{% else %}''{% endif %},{{SanPham['SLTonKho']}},0,'True')">
+                    Mua Ngay
+                </button>
+                {% else %}
+                <button class="btn bg-danger text-while rounded-2 d-block w-100">Hết hàng</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="row ms-md-4 mt-4">
+        <hr class="mb-2">
+        <h3>Mô tả - Đánh giá</h3>
+        <p>{{SanPham.MoTa}}</p>
+        <hr class="mt-2">
+    </div>
+    <div class="row ms-md-4 mt-4">
+        <h3>Bình luận</h3>
+        <div>
+            <textarea class="w-100 p-2" style="resize: none" rows="5" placeholder="Noi dung danh gia" name="binhluan" id="BinhLuan"></textarea>
+            <div class="text-end">
+                <button class="btn btn-primary" onclick="themBinhLuan('{{SanPham['MaSP']}}',{% if currenr_user.is_authenticated and current_user.LoaiTK|string == 'LoaiTaiKhoan.KHACHHANG' %}{{current_user.LoaiTK}}{% else %}''{% endif %})">
+                    Đánh giá
+                </button>
+            </div>
+        </div>
+        <hr class="mt-2">
+    </div>
+    {% for b in BinhLuan.values() %}
+    <div class="comment ms-md-4 row">
+        <h3>{{b['HoTen']}}</h3>
+        <p class="date">{{b['NgayBinhLuan']}}</p>
+        <p>{{b['NoiDung']}}</p>
+        <hr>
+    </div>
+    {% endfor %}
+    <ul class="pagination mt-1 justify-content-center">
+        {% for i in range(Trangs) %}
+        <li class="page-item"><a class="page-link {% if Trang|int == (i + 1) %}bg-primary text-while{% endif %}" href="{{url_for('ChiTietSanPham', 'MaSP = SanPham['MaSP']',Trang = i+1)}}">
+            {{i + 1}}
+        </a></li>
+        {% endfor %}
+    </ul>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js"></script>
+<script>
+    window.onload = function(){
+        let dates = document.getElementsByClassName("date");
+        for (let d of dates)
+            d.innerText = moment(d.innerText).locale("vi").fromNow()
+    }
+</script>
+{% endblock %}
